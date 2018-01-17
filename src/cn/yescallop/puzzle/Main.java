@@ -1,11 +1,11 @@
 package cn.yescallop.puzzle;
 
+import java.util.Random;
+
 public class Main {
 
     public static void main(String[] args) {
-        PuzzleStatus p = PuzzleStatus.of(3, "7,2,8\n" +
-                "4,5,6\n" +
-                "1,3,0");
+        PuzzleStatus p = PuzzleStatus.generate(3, 500, new Random());
         System.out.println(p);
         PuzzleSolver solver = new BFSPuzzleSolver(p);
         long start = System.currentTimeMillis();

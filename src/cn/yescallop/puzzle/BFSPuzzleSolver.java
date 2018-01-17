@@ -20,17 +20,19 @@ public class BFSPuzzleSolver extends PuzzleSolver {
         end.calculateHash();
         long solvedHash = end.hash;
         PuzzleStatus cur = null;
+        solve:
         while (openQueue.size() > 0) {
             cur = openQueue.remove();
             openSet.remove(cur);
             if (!closedSet.add(cur)) continue;
-            if (Arrays.deepEquals(cur.matrix, solvedMatrix)) {
-                break;
-            }
             for (int i = 0; i < 4; i++) {
                 PuzzleStatus t = cur.cloneWithMove(i);
                 if (t != null) {
                     t.calculateHash();
+                    if (t.hash == solvedHash && Arrays.deepEquals(t.matrix, solvedMatrix)) {
+                        cur = t;
+                        break solve;
+                    }
                     if (!closedSet.contains(t) && !openSet.contains(t)) {
                         openQueue.add(t);
                         openSet.add(t);
