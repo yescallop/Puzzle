@@ -1,8 +1,5 @@
 package cn.yescallop.puzzle;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Route {
 
     public static final int UP = 0;
