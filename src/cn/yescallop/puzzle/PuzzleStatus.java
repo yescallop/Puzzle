@@ -1,5 +1,6 @@
 package cn.yescallop.puzzle;
 
+import java.awt.*;
 import java.util.Random;
 import java.util.StringJoiner;
 
@@ -13,12 +14,14 @@ public class PuzzleStatus {
     int[][] matrix;
     int hash;
     int spaceX, spaceY;
+    int g, h, f;
 
-    private PuzzleStatus(int[][] matrix, int spaceX, int spaceY, int move, PuzzleStatus parent) {
+    private PuzzleStatus(int[][] matrix, int spaceX, int spaceY, int g, int move, PuzzleStatus parent) {
         this.size = matrix.length;
         this.matrix = matrix;
         this.spaceX = spaceX;
         this.spaceY = spaceY;
+        this.g = g;
         this.move = move;
         this.parent = parent;
     }
@@ -40,7 +43,7 @@ public class PuzzleStatus {
         }
         if (spaceX == -1)
             throw new IllegalArgumentException("No space");
-        return new PuzzleStatus(matrix, spaceX, spaceY, -1, null);
+        return new PuzzleStatus(matrix, spaceX, spaceY, 0, -1, null);
     }
 
     public static PuzzleStatus init(int size) {
@@ -52,7 +55,7 @@ public class PuzzleStatus {
             }
         }
         matrix[size - 1][size - 1] = 0;
-        return new PuzzleStatus(matrix, size - 1, size - 1, -1, null);
+        return new PuzzleStatus(matrix, size - 1, size - 1, 0, -1, null);
     }
 
     public static PuzzleStatus generate(int size, int steps, Random random) {
@@ -93,6 +96,27 @@ public class PuzzleStatus {
 
     void calculateHash() {
         this.hash = deepHashCode(matrix);
+    }
+
+    void estimateCost(Point[] index) {
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                Point p = index[matrix[y][x]];
+                this.h += Math.abs(p.x - x) + Math.abs(p.y - y);
+            }
+        }
+        this.h *= 1.5;
+        this.f = this.g + this.h;
+    }
+
+    Point[] createIndex() {
+        Point[] res = new Point[size * size];
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                res[matrix[y][x]] = new Point(x, y);
+            }
+        }
+        return res;
     }
 
     @Override
@@ -139,7 +163,7 @@ public class PuzzleStatus {
             }
             this.matrix[spaceY][spaceX] = 0;
             this.matrix[y][x] = n;
-            return new PuzzleStatus(matrix, x, y, c, this);
+            return new PuzzleStatus(matrix, x, y, g + 1, c, this);
         }
         return null;
     }
