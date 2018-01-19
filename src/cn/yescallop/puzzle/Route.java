@@ -17,15 +17,10 @@ public class Route {
     }
 
     public static Route fromTail(PuzzleStatus p) {
-        List<Integer> list = new ArrayList<>();
-        while (p.move != -1) {
-            list.add(p.move);
+        int[] route = new int[p.g];
+        for (int i = p.g - 1; i >= 0; i--) {
+            route[i] = p.move;
             p = p.parent;
-        }
-        int[] route = new int[list.size()];
-        int j = 0;
-        for (int i = list.size() - 1; i >= 0; i--) {
-            route[j++] = list.get(i);
         }
         return new Route(route);
     }
